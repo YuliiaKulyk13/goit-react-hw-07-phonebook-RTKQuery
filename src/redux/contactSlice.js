@@ -1,24 +1,33 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+// import { addContact, deleteContact, fetchContacts } from './operations';
 
-import { addContact, deleteContact, fetchContacts } from './operations';
+export const contactsApi = createApi({
+  reducerPath: 'contacts',
+  baseQuery: fetchBaseQuery({
+    baseUrl: 'https://644f91eab61a9f0c4d25c138.mockapi.io',
+  }),
+  endpoints: builder => ({
+    fetchContacts: builder.query({
+      query: () => '/contacts',
+    }),
+  }),
+});
 
-const handlePending = state => {
-  state.contacts.isLoading = true;
-};
+export const { useFetchContactsQuery } = contactsApi;
 
-const handleRejected = (state, action) => {
-  state.contacts.isLoading = false;
-  state.contacts.error = action.payload;
-};
+// const handlePending = state => {
+//   state.contacts.isLoading = true;
+// };
+
+// const handleRejected = (state, action) => {
+//   state.contacts.isLoading = false;
+//   state.contacts.error = action.payload;
+// };
 
 export const contactSlice = createSlice({
   name: 'contacts',
   initialState: {
-    contacts: {
-      items: [],
-      isLoading: false,
-      error: null,
-    },
     filters: '',
   },
   reducers: {
@@ -26,35 +35,36 @@ export const contactSlice = createSlice({
       state.filters = action.payload;
     },
   },
-  extraReducers: builder => {
-    builder
-      .addCase(fetchContacts.pending, handlePending)
-      .addCase(fetchContacts.fulfilled, (state, action) => {
-        state.contacts.isLoading = false;
-        state.contacts.error = null;
-        state.contacts.items = action.payload;
-      })
-      .addCase(fetchContacts.rejected, handleRejected)
-
-      .addCase(addContact.pending, handlePending)
-      .addCase(addContact.fulfilled, (state, action) => {
-        state.contacts.isLoading = false;
-        state.contacts.error = null;
-        state.contacts.items.push(action.payload);
-      })
-      .addCase(addContact.rejected, handleRejected)
-
-      .addCase(deleteContact.pending, handlePending)
-      .addCase(deleteContact.fulfilled, (state, action) => {
-        state.contacts.isLoading = false;
-        state.contacts.error = null;
-        state.contacts.items = state.contacts.items.filter(contact => {
-          return contact.id !== action.payload.id;
-        });
-      })
-      .addCase(deleteContact.rejected, handleRejected);
-  },
 });
+//   extraReducers: builder => {
+//     builder
+//       .addCase(fetchContacts.pending, handlePending)
+//       .addCase(fetchContacts.fulfilled, (state, action) => {
+//         state.contacts.isLoading = false;
+//         state.contacts.error = null;
+//         state.contacts.items = action.payload;
+//       })
+//       .addCase(fetchContacts.rejected, handleRejected)
 
-export const contactsReducers = contactSlice.reducer;
-export const { filterContacts } = contactSlice.actions;
+//       .addCase(addContact.pending, handlePending)
+//       .addCase(addContact.fulfilled, (state, action) => {
+//         state.contacts.isLoading = false;
+//         state.contacts.error = null;
+//         state.contacts.items.push(action.payload);
+//       })
+//       .addCase(addContact.rejected, handleRejected)
+
+//       .addCase(deleteContact.pending, handlePending)
+//       .addCase(deleteContact.fulfilled, (state, action) => {
+//         state.contacts.isLoading = false;
+//         state.contacts.error = null;
+//         state.contacts.items = state.contacts.items.filter(contact => {
+//           return contact.id !== action.payload.id;
+//         });
+//       })
+//       .addCase(deleteContact.rejected, handleRejected);
+//   },
+// });
+
+// export const contactsReducers = contactSlice.reducer;
+// export const { filterContacts } = contactSlice.actions;
