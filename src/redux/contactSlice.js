@@ -2,19 +2,43 @@ import { createSlice } from '@reduxjs/toolkit';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 // import { addContact, deleteContact, fetchContacts } from './operations';
 
+const API_ENDPOINT = '/contacts';
+const BASE_URL = 'https://644f91eab61a9f0c4d25c138.mockapi.io';
+
 export const contactsApi = createApi({
   reducerPath: 'contacts',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://644f91eab61a9f0c4d25c138.mockapi.io',
+    baseUrl: BASE_URL,
   }),
+  tagTypes: ['Contacts'],
   endpoints: builder => ({
     fetchContacts: builder.query({
-      query: () => '/contacts',
+      query: () => API_ENDPOINT,
+      providesTags: ['Contacts'],
+    }),
+    addContacts: builder.mutation({
+      query: contact => ({
+        url: API_ENDPOINT,
+        method: 'POST',
+        body: contact,
+      }),
+      invalidatesTags: ['Contacts'],
+    }),
+    deleteContacts: builder.mutation({
+      query: id => ({
+        url: `${API_ENDPOINT}/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Contacts'],
     }),
   }),
 });
 
-export const { useFetchContactsQuery } = contactsApi;
+export const {
+  useFetchContactsQuery,
+  useAddContactsMutation,
+  useDeleteContactsMutation,
+} = contactsApi;
 
 // const handlePending = state => {
 //   state.contacts.isLoading = true;
@@ -25,8 +49,8 @@ export const { useFetchContactsQuery } = contactsApi;
 //   state.contacts.error = action.payload;
 // };
 
-export const contactSlice = createSlice({
-  name: 'contacts',
+export const filterSlice = createSlice({
+  name: 'filter',
   initialState: {
     filters: '',
   },
@@ -36,6 +60,10 @@ export const contactSlice = createSlice({
     },
   },
 });
+
+export const { filterContacts } = filterSlice.actions;
+
+export default filterSlice.reducer;
 //   extraReducers: builder => {
 //     builder
 //       .addCase(fetchContacts.pending, handlePending)

@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+// import { useDispatch, useSelector } from 'react-redux';
 import { nanoid } from 'nanoid';
 import { AddButton, Form, FormInput, Label } from './ContactsForm.styled';
-import { selectContacts } from 'redux/selectors';
-import { addContact } from 'redux/operations';
+// import { selectContacts } from 'redux/selectors';
+// import { addContact } from 'redux/operations';
+import {
+  useAddContactsMutation,
+  useFetchContactsQuery,
+} from 'redux/contactSlice';
 
 export const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
-  const dispatch = useDispatch();
-  const contactList = useSelector(selectContacts);
+  const { data } = useFetchContactsQuery();
+  const [addContact] = useAddContactsMutation();
+  // const dispatch = useDispatch();
+  // const contactList = useSelector(selectContacts);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -29,10 +35,9 @@ export const ContactForm = () => {
 
   const handleSubmit = e => {
     e.preventDefault();
+    addContact({ name, number });
     const addNewContact = {
       id: nanoid(),
-      name,
-      number,
     };
     handleCheck(addNewContact);
     setName('');
@@ -40,11 +45,12 @@ export const ContactForm = () => {
   };
 
   const handleCheck = addNewContact => {
-    contactList.find(
-      contact => contact.name.toLowerCase() === addNewContact.name.toLowerCase()
+    data.find(
+      contact =>
+        contact.name.toLowerCase() === addNewContact.values.name.toLowerCase()
     )
       ? alert(`${name}is already in contacts.`)
-      : dispatch(addContact(addNewContact));
+      : addContact(addNewContact);
   };
 
   return (

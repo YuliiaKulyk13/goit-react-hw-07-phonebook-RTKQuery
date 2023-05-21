@@ -1,28 +1,38 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Contact,
   ContactItem,
   DeleteButton,
   List,
 } from './PhoneContacts.styled';
-import { selectVisibleContacts } from 'redux/selectors';
-import { deleteContact } from 'redux/operations';
+import { selectFilters } from 'redux/selectors';
+import {
+  useDeleteContactsMutation,
+  useFetchContactsQuery,
+} from 'redux/contactSlice';
+import { Loader } from 'components/Loader/Loader';
 
 const PhoneContacts = () => {
-  const dispatch = useDispatch();
-  const NewFilteredContactsList = useSelector(selectVisibleContacts);
+  const [deleteContact] = useDeleteContactsMutation();
+  const { data = [], isLoading, isError } = useFetchContactsQuery();
+  const filter = useSelector(selectFilters);
+
+  const NewFilteredContactsList = () => {
+    return data.filter(contact =>
+      contact.name.toLowerCase().includes(filter.toLowerCase())
+    );
+  };
 
   return (
     <List>
-      {NewFilteredContactsList.map(({ id, name, phone }) => (
+      {isLoading && !isError && <Loader />}
+      {NewFilteredContactsList().map(({ id, name, phone }) => (
         <Contact key={id}>
           <ContactItem>
             {name}: {phone}
           </ContactItem>
-          <DeleteButton onClick={() => dispatch(deleteContact(id))}>
-            Delete
-          </DeleteButton>
+          <DeleteButton onClick={() => deleteContact(id)}>Delete</DeleteButton>
         </Contact>
       ))}
     </List>
