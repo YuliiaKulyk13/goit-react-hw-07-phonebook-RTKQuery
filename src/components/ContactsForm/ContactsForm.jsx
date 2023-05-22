@@ -14,8 +14,6 @@ export const ContactForm = () => {
   const [number, setNumber] = useState('');
   const { data } = useFetchContactsQuery();
   const [addContact] = useAddContactsMutation();
-  // const dispatch = useDispatch();
-  // const contactList = useSelector(selectContacts);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -46,8 +44,7 @@ export const ContactForm = () => {
 
   const handleCheck = addNewContact => {
     data.find(
-      contact =>
-        contact.name.toLowerCase() === addNewContact.values.name.toLowerCase()
+      contact => contact.name.toLowerCase() === addNewContact.name.toLowerCase()
     )
       ? alert(`${name}is already in contacts.`)
       : addContact(addNewContact);
